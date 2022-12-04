@@ -1,0 +1,183 @@
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
+public class UpGradeCellGame {
+	JFrame frame;// Cell Game 틀(frame) 선언
+	JOptionPane optionPane;//메시지 표시 창 선언
+	
+	int WIDTH = 1024;
+	int HEIGHT = 768;
+	int x = 100;
+	int y = 100;
+	int radius = 5;
+	int speed = 1; 
+	int score = 0; 
+	String id = ""; // Cell Game에서 사용될 변수 선언
+	
+	ArrayList<Jewel> jewels = new ArrayList<>(); // 플레이어가 먹을 세포들의 지리를 지정해줄 배열 선언
+	
+	public UpGradeCellGame() {
+		id = optionPane.showInputDialog("플레이어 이름을 입력하세요."); // 플레이어의 이름을 받을 String 변수 선언
+		if(id == null) {
+			optionPane.showMessageDialog(null, "취소 버튼(x 버튼)을 누르셨습니다.(게임을 종료합니다)"); // 취소를 누를경우 종료
+		}			
+		else {
+			frame = new JFrame("플레이어 " + id +"의 세포키우기");
+			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			frame.setSize(WIDTH, HEIGHT);
+			frame.getContentPane().add(new GamePanel());
+			frame.addKeyListener(new GameKeyListener());
+			frame.setVisible(true); // 취소를 누르지않고 이름을 입력 했을 경우 틀과 관련된 명령어(크기, 페널붙이기, 이벤트 추가 등) 선언
+		}
+	}
+	
+	public void go() {
+		for (int i = 0; i <= 100; i++) {
+			jewels.add(new Jewel()); // 위에서 선언한 공간내에 주어진 i만큼의 세포생성
+		}
+		
+		while (true) {
+			Iterator<Jewel> alba = jewels.iterator();
+			while (alba.hasNext()) {
+				Jewel jewel = alba.next();
+				double distance = Math.sqrt((x - jewel.getX()) * (x - jewel.getX()) + (y - jewel.getY()) * (y - jewel.getY()));
+				if (distance < radius) {
+					radius++;
+					speed++;
+					score++;
+					alba.remove();
+				} // 플레이어가 세포를 먹을수록 크기와 점수가 커지고 느려지게 하기
+			}
+			try {
+				Thread.sleep(speed); // 플레이어의 속도를 제한하기
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			frame.repaint(); // 플레이어가 이동할때마다 틀에 새롭게 원을 그리게하기
+		}
+	}
+	
+	class GamePanel extends JPanel {
+		public void paintComponent(Graphics g) {
+			super.paintComponent(g);
+			for (Jewel jewel : jewels) {
+				g.setColor(jewel.getColor());
+				g.fillOval(jewel.getX(), jewel.getY(), jewel.getWidth(), jewel.getWidth()); // 플레이어가 먹을 세포의 크기, 공간, 색깔 지정후 생성
+			}
+			g.setColor(Color.CYAN);
+			g.fillOval(x, y, 2 * radius, 2 * radius); // 플레이어의 세포의 크기, 공간, 색깔 지정후 생성
+			g.setColor(Color.BLACK);
+			g.drawOval(x, y, 2 * radius, 2 * radius); // 플레이어의 세포가 잘보이도록 테두리표시
+		}
+	}
+	
+	class Jewel {
+		int x = 0;
+		int y = 0; 
+		Color color = null;
+		int width = 0; // 플레이어가 먹을 세포의 초기 x좌표, y좌표, 색깔, 크기 선언후 초기화
+		
+		public int getX() {
+			return x;
+		}
+
+		public int getY() {
+			return y;
+		} // x, y좌표의 getter
+
+		public Color getColor() {
+			return color;
+		} // 세포 색깔 getter
+
+		public int getWidth() {
+			return width;
+		} // 세포 크기 getter
+		
+		public Jewel() {
+			x = (int)(Math.random() * WIDTH);
+			y = (int)(Math.random() * HEIGHT);
+			color = new Color((int)(Math.random() * 0xFFFFFF));
+			width = 4 + (int)(Math.random() * 6); // 플레이어가 먹을 세포의 x좌표값, y좌표값, 색깔값, 크기값 선언
+		}
+	}
+	
+	class GameKeyListener implements KeyListener {
+
+		@Override
+		public void keyTyped(KeyEvent e) {
+		}
+
+		@Override
+		public void keyPressed(KeyEvent e) {
+			switch (e.getKeyCode()){
+				case KeyEvent.VK_UP: // 키보드에 UP버튼이 이벤트로 들어왔을때
+					if(y <= 0) { // y값이 0보다 작거나 같아지면
+						radius = radius - radius; // radius 값에서 radius값을 빼 radius값을 0으로 만들고
+						if(radius == 0) {
+							frame.dispose(); // radius값이 0이되면 열려있는 프레임을 닫고
+						}
+						optionPane = new JOptionPane();
+						optionPane.showMessageDialog(null, "Game Over\n최종 점수 : " + score + "점"); // Game Over라는 메시지와 최종 점수 출력 
+					}
+					else{
+						y--;
+						break; // 그렇지 않을 경우 y값을 감소
+					}
+				case KeyEvent.VK_DOWN: // 키보드에 DOWN버튼이 이벤트로 들어왔을때
+					if(y >= (HEIGHT - (radius * 2))) { // y값이 세로값에서 지름값을 뺀값보다 크거나 같아지면
+						radius = radius - radius; // radius 값에서 radius값을 빼 radius값을 0으로 만들고
+						if(radius == 0) { 
+							frame.dispose(); // radius값이 0이 되면 열려있는 프레임을 닫고
+						}
+						optionPane = new JOptionPane();
+						optionPane.showMessageDialog(null, "Game Over\n최종 점수 : " + score + "점"); // Game Over라는 메시지와 최종 점수 출력 
+					}
+					else {
+						y++;
+						break; // 그렇지 않을 경우 y값을 증가
+					}
+				case KeyEvent.VK_RIGHT: // 키보드에 RIGHT버튼이 이벤트로 들어왔을때
+					if(x >= (WIDTH - (radius * 2))) { // x값이 세로값에서 지름값을 뺀값보다 크거나 같아지면
+						radius = radius - radius; // radius 값에서 radius값을 빼 radius값을 0으로 만들고
+						if(radius == 0) {
+							frame.dispose(); // radius값이 0이 되면 열려있는 프레임을 닫고
+						}
+						optionPane = new JOptionPane();
+						optionPane.showMessageDialog(null, "Game Over\n최종 점수 : " + score + "점"); // Game Over라는 메시지와 최종 점수 출력  
+					}
+					else {
+						x++;
+						break; // 그렇지 않을 경우 x값을 증가
+					}
+				case KeyEvent.VK_LEFT: // 키보드에 LEFT버튼이 이벤트로 들어왔을때
+					if(x <= 0) { // x값이 0보다 작거나 같아지면
+						radius = radius - radius; // radius 값에서 radius값을 빼 radius값을 0으로 만들고
+						if(radius == 0) {
+							frame.dispose(); // radius값이 0이 되면 열려있는 프레임을 닫고
+						}
+						optionPane = new JOptionPane();
+						optionPane.showMessageDialog(null, "Game Over\n최종 점수 : " + score + "점"); // Game Over라는 메시지와 최종 점수 출력  
+					}
+					else {
+						x--;
+						break; // 그렇지 않을 경우 x값을 감소
+					}
+			}
+			
+		}
+
+		@Override
+		public void keyReleased(KeyEvent e) {
+		}
+		
+	}
+}
