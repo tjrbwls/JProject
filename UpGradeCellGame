@@ -1,4 +1,7 @@
+package upgradeCellGame;
+
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -40,7 +43,7 @@ public class UpGradeCellGame {
 	}
 	
 	public void go() {
-		for (int i = 0; i <= 100; i++) {
+		for (int i = 1; i <= 2; i++) {
 			jewels.add(new Jewel()); // 위에서 선언한 공간내에 주어진 i만큼의 세포생성
 		}
 		
@@ -73,10 +76,17 @@ public class UpGradeCellGame {
 				g.setColor(jewel.getColor());
 				g.fillOval(jewel.getX(), jewel.getY(), jewel.getWidth(), jewel.getWidth()); // 플레이어가 먹을 세포의 크기, 공간, 색깔 지정후 생성
 			}
+		}
+	}
+	
+	class Player extends JPanel {
+		public void playerStatus(Graphics g) {
 			g.setColor(Color.CYAN);
 			g.fillOval(x, y, 2 * radius, 2 * radius); // 플레이어의 세포의 크기, 공간, 색깔 지정후 생성
 			g.setColor(Color.BLACK);
 			g.drawOval(x, y, 2 * radius, 2 * radius); // 플레이어의 세포가 잘보이도록 테두리표시
+			g.drawString("플레이어 "+id+"의 현재 점수 : " + score, 850, 20);
+			g.drawString("남은 세포 갯수 : "+jewels.size(), 850, 40); // 플레이어의 현재점수와 남은 세포 갯수를 frame에 보이게 함
 		}
 	}
 	
@@ -120,7 +130,7 @@ public class UpGradeCellGame {
 		public void keyPressed(KeyEvent e) {
 			switch (e.getKeyCode()){
 				case KeyEvent.VK_UP: // 키보드에 UP버튼이 이벤트로 들어왔을때
-					if(y <= 0) { // y값이 0보다 작거나 같아지면
+					if(y < 0) { // y값이 0보다 작아지면
 						radius = radius - radius; // radius 값에서 radius값을 빼 radius값을 0으로 만들고
 						if(radius == 0) {
 							frame.dispose(); // radius값이 0이되면 열려있는 프레임을 닫고
@@ -133,7 +143,7 @@ public class UpGradeCellGame {
 						break; // 그렇지 않을 경우 y값을 감소
 					}
 				case KeyEvent.VK_DOWN: // 키보드에 DOWN버튼이 이벤트로 들어왔을때
-					if(y >= (HEIGHT - (radius * 2))) { // y값이 세로값에서 지름값을 뺀값보다 크거나 같아지면
+					if(y > (HEIGHT - (radius * 2))) { // y값이 세로값에서 지름값을 뺀값보다 커지면
 						radius = radius - radius; // radius 값에서 radius값을 빼 radius값을 0으로 만들고
 						if(radius == 0) { 
 							frame.dispose(); // radius값이 0이 되면 열려있는 프레임을 닫고
@@ -146,7 +156,7 @@ public class UpGradeCellGame {
 						break; // 그렇지 않을 경우 y값을 증가
 					}
 				case KeyEvent.VK_RIGHT: // 키보드에 RIGHT버튼이 이벤트로 들어왔을때
-					if(x >= (WIDTH - (radius * 2))) { // x값이 세로값에서 지름값을 뺀값보다 크거나 같아지면
+					if(x > (WIDTH - (radius * 2))) { // x값이 세로값에서 지름값을 뺀값보다 커지면
 						radius = radius - radius; // radius 값에서 radius값을 빼 radius값을 0으로 만들고
 						if(radius == 0) {
 							frame.dispose(); // radius값이 0이 되면 열려있는 프레임을 닫고
@@ -159,7 +169,7 @@ public class UpGradeCellGame {
 						break; // 그렇지 않을 경우 x값을 증가
 					}
 				case KeyEvent.VK_LEFT: // 키보드에 LEFT버튼이 이벤트로 들어왔을때
-					if(x <= 0) { // x값이 0보다 작거나 같아지면
+					if(x < 0) { // x값이 0보다 작아지면
 						radius = radius - radius; // radius 값에서 radius값을 빼 radius값을 0으로 만들고
 						if(radius == 0) {
 							frame.dispose(); // radius값이 0이 되면 열려있는 프레임을 닫고
