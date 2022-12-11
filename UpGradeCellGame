@@ -41,7 +41,7 @@ public class UpGradeCellGame {
 	}
 	
 	public void go() {
-		for (int i = 1; i <= 2; i++) {
+		for (int i = 1; i <= 100; i++) {
 			jewels.add(new Jewel()); // 위에서 선언한 공간내에 주어진 i만큼의 세포생성
 		}
 		
@@ -74,17 +74,12 @@ public class UpGradeCellGame {
 				g.setColor(jewel.getColor());
 				g.fillOval(jewel.getX(), jewel.getY(), jewel.getWidth(), jewel.getWidth()); // 플레이어가 먹을 세포의 크기, 공간, 색깔 지정후 생성
 			}
-		}
-	}
-	
-	class Player extends JPanel {
-		public void playerStatus(Graphics g) {
 			g.setColor(Color.CYAN);
 			g.fillOval(x, y, 2 * radius, 2 * radius); // 플레이어의 세포의 크기, 공간, 색깔 지정후 생성
 			g.setColor(Color.BLACK);
 			g.drawOval(x, y, 2 * radius, 2 * radius); // 플레이어의 세포가 잘보이도록 테두리표시
-			g.drawString("플레이어 "+id+"의 현재 점수 : " + score, 850, 20);
-			g.drawString("남은 세포 갯수 : "+jewels.size(), 850, 40); // 플레이어의 현재점수와 남은 세포 갯수를 frame에 보이게 함
+			g.drawString("현재 점수 : " + score, 900, 20);
+			g.drawString("남은 세포 갯수 : "+jewels.size(), 900, 40); // 플레이어의 현재점수와 남은 세포 갯수를 frame에 보이게 함
 		}
 	}
 	
